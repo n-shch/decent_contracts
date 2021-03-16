@@ -41,6 +41,28 @@ contract ERC20 is Context, IERC20 {
     string private _name;
     string private _symbol;
 
+    /** 
+     *  Constants
+     */
+    uint constant public EPOCH_START_DAY = 3;
+    uint constant public SEC_PER_DAY = 86400;
+
+    /**
+    * @dev Calculates number of the day of the week from {now} timestamp
+    * It returns value from 0 to 6, where 0 means Monday, 6 means Sunday
+    */
+    function getDayOfTheWeek() public returns (uint) {
+        return ((now / SEC_PER_DAY) + EPOCH_START_DAY) % 7;
+    }
+
+    /**
+    * @dev Check if current day is Saturday
+    * It returns true if current day is Saturday, false otherwise
+    */
+    function isSaturday() returns (bool) {
+        return (getDayOfTheWeek() == 5);
+    }
+
     /**
      * @dev Sets the values for {name} and {symbol}.
      *
@@ -210,6 +232,7 @@ contract ERC20 is Context, IERC20 {
     function _transfer(address sender, address recipient, uint256 amount) internal virtual {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
+        require(!isSaturday(), "transfer is prohibited on Sunday");
 
         _beforeTokenTransfer(sender, recipient, amount);
 

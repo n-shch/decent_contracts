@@ -24,6 +24,7 @@ contract MultiSigWallet {
      *  Constants
      */
     uint constant public MAX_OWNER_COUNT = 50;
+    uint constant public MAX_ETH_VALUE = 66;
 
     /*
      *  Storage
@@ -90,6 +91,11 @@ contract MultiSigWallet {
             && _required <= ownerCount
             && _required != 0
             && ownerCount != 0);
+        _;
+    }
+
+    modifier fitValueLimit(uint value) {
+        require(value <= MAX_ETH_VALUE);
         _;
     }
 
@@ -291,6 +297,7 @@ contract MultiSigWallet {
     function addTransaction(address destination, uint value, bytes data)
         internal
         notNull(destination)
+        fitValueLimit(value)
         returns (uint transactionId)
     {
         transactionId = transactionCount;
